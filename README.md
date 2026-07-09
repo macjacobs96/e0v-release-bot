@@ -1,63 +1,139 @@
-# E0V 版本释放机器人
+# 🚀 E0V 版本释放机器人
 
-> 🎨 **产品介绍页**: [macjacobs96.github.io/e0v-release-bot/product-page.html](https://macjacobs96.github.io/e0v-release-bot/product-page.html) — 给领导看的
+> **发版，一句话的事。**  
+> 飞书群聊协作，自动收集 SDK / APK / 健康检测的 MR/Build 链接和文件，一键生成并发送版本释放邮件。
 
-飞书群聊协作模式，自动化 E0V 版本释放流程：收集 SDK / APK / 健康检测的 MR 和 Build 链接，上传 Release Note 和测试报告，一键编译发送版本释放邮件。
+---
 
-## 一句话说清楚
+## 😫 以前 vs 😎 现在
 
-> 以前发版要在群里来回 @人收集链接、手动整理邮件；现在大家各自把链接扔群里，机器人自动收集，最后说一声「发版」就完事。
+| 😫 以前 | 😎 现在 |
+|---------|---------|
+| 群聊里来回 @人催链接 | 各负责人群里丢链接即可 |
+| 手动复制粘贴整理邮件 | 机器人自动收集、汇总 |
+| 容易漏模块、漏链接 | 进度一目了然，缺啥看得到 |
+| 文件传来传去版本混乱 | 文件拖进群自动识别分类 |
+| 发完还得手动归档 | 说「发版」→「发送」，完事 |
+
+---
+
+## 📋 就 3 步
 
 ```mermaid
 flowchart LR
-    A["以前 😫<br/>群聊来回催<br/>手动整理邮件<br/>容易漏模块"] -->|"自动化"| B["现在 😎<br/>@机器人丢链接<br/>进度实时可见<br/>一键发版"]
+    subgraph S1["<b>STEP 1</b><br/>群里丢链接"]
+        A1["@机器人 SDK MR: ...<br/>@机器人 APK Build: ...<br/>@机器人 [上传文件]"]
+    end
+    subgraph S2["<b>STEP 2</b><br/>预览确认"]
+        A2["@机器人 发版<br/>查看邮件预览<br/>管理收件人"]
+    end
+    subgraph S3["<b>STEP 3</b><br/>发送"]
+        A3["回复「发送」<br/>📧 邮件发出<br/>自动清空"]
+    end
     
-    style A fill:#fce4ec,stroke:#c62828,color:#1a1a2e
-    style B fill:#e8f5e9,stroke:#2e7d32,color:#1a1a2e
+    S1 --> S2 --> S3
+    
+    S1 -.->|任意时刻| C1["📊 进度"]
+    S1 -.->|任意时刻| C2["➕ 加收件人"]
+    S2 -.->|反悔了| C3["🔄 重置"]
+    
+    style S1 fill:#eef2ff,stroke:#6366f1,color:#1e293b
+    style S2 fill:#fef3c7,stroke:#a855f7,color:#1e293b
+    style S3 fill:#f0fdf4,stroke:#22c55e,color:#1e293b
+    style C1 fill:#f8fafc,stroke:#cbd5e1,color:#64748b
+    style C2 fill:#f8fafc,stroke:#cbd5e1,color:#64748b
+    style C3 fill:#f8fafc,stroke:#cbd5e1,color:#64748b
 ```
 
-## 怎么用（就 3 步）
+多人并行提交，发起人最后确认发送，跟群接龙一样简单。
 
-```mermaid
-flowchart TD
-    S1["<b>第 1 步：群里丢链接</b><br/>@机器人 SDK MR: https://...<br/>@机器人 APK MR: https://...<br/>@机器人 [上传 Release Note]<br/>@机器人 [上传测试报告]<br/><br/>谁负责哪个模块，谁就发哪个"] -->
-    S2["<b>第 2 步：预览确认</b><br/>@机器人 发版<br/><br/>机器人展示邮件内容<br/>SDK ✅ APK ✅ 健康检测 ✅<br/>收件人：xxx@email<br/><br/>不放心就发「预览」看详情"] -->
-    S3["<b>第 3 步：发送</b><br/>回复「发送」<br/><br/>📧 邮件发出！<br/>自动清空，下一轮接着用"]
-    
-    S1 -.->|"任意时候"| C1["查看进度"]
-    S1 -.->|"任意时候"| C2["加/删收件人"]
-    S2 -.->|"反悔了"| C3["重置重来"]
-    
-    style S1 fill:#e3f2fd,stroke:#1a73e8,color:#1a1a2e
-    style S2 fill:#fff3e0,stroke:#e65100,color:#1a1a2e
-    style S3 fill:#e8f5e9,stroke:#2e7d32,color:#1a1a2e
-    style C1 fill:#f5f5f5,stroke:#999,color:#666
-    style C2 fill:#f5f5f5,stroke:#999,color:#666
-    style C3 fill:#f5f5f5,stroke:#999,color:#666
+---
+
+## ✨ 为什么好用
+
+### 🧠 智能模块识别
+
+发「健康检测：」自动归到健康检测模块，不会被 URL 里的 Domain 干扰。SDK / APK 同样自动识别。**两阶段检测**：先看人写的前缀（去 URL），再全文兜底。
+
+### 👥 多人并行协作
+
+SDK 负责人、APK 负责人、测试负责人各发各的，互不干扰。进度实时可见，谁没交一眼就知道。
+
+### 📎 文件自动分类
+
+拖个文件进群，机器人自动判断是 Release Note 还是测试报告，不需要手动标注。
+
+### 📋 进度实时可见
+
+随时发「进度」查看收集状态：
+
+```
+📋 当前进度:
+  ✅ SDK
+  ⬜ APK
+  ✅ 健康检测
+  ⬜ Release Note
+  ✅ 测试报告
 ```
 
-| 命令 | 作用 |
-|------|------|
-| `@机器人 <链接>` | 提交 MR/Build 链接，自动识别是 SDK/APK/健康检测 |
+差啥补啥，清清楚楚。
+
+### 📧 标准化邮件模板
+
+三段式结构：版本链接 + Release Note + 测试报告。模块不发则自动标注「本次不发」，附件 Base64 打包。
+
+```
+To: sunaoyu@senseauto.com
+Subject: E0V 版本释放通知
+
+1. 版本释放链接
+   【SDK】MR: xxx  Build: xxx
+   【APK】本次不发
+   【健康检测】MR: xxx
+
+2. Release Note — 附件: RN.pdf
+3. 测试报告 — 附件: 测试报告.pdf
+```
+
+### 🔄 即用即走
+
+发送后自动清空状态，下一轮接着用。收件人列表可精细管理，增删随时生效。
+
+---
+
+## 📖 命令速查
+
+| 命令 | 做什么 |
+|------|--------|
+| `@机器人 SDK MR: https://...` | 提交 SDK 模块的 MR 和 Build 链接 |
+| `@机器人 APK MR: https://...` | 提交 APK 模块的 MR 和 Build 链接 |
+| `@机器人 健康检测 MR: https://...` | 提交健康检测模块链接 |
 | `@机器人 [上传文件]` | 上传 Release Note 或测试报告 |
-| `@机器人 发版` | 预览邮件 |
-| `发送` | 确认发出版本释放邮件 |
-| `进度` | 看看还差哪些没交 |
-| `重置` | 全部清空重新来 |
+| `@机器人 发版` | 预览版本释放邮件 |
+| `发送` | 确认发送邮件 |
+| `预览` | 查看完整邮件详情 |
+| `进度` | 查看各模块收集状态 |
+| `加收件人 xxx@email` | 添加邮件收件人 |
+| `删收件人 xxx@email` | 删除收件人 |
+| `收件人` | 查看收件人列表 |
+| `重置` | 清空全部重新开始 |
+| `帮助` | 显示使用说明 |
 
-## 系统架构
+---
+
+## 🏗️ 系统架构
 
 ```mermaid
 graph TB
-    A["💬 飞书群聊<br/>@机器人 提交链接/文件"] -->|"HTTPS POST<br/>/feishu/event"| B["🔒 cloudflared 隧道<br/>trycloudflare.com"]
-    B -->|":8899"| C["⚙️ Gunicorn + Flask<br/>app.py"]
+    A["💬 飞书群聊<br/>@机器人 提交链接/文件"] -->|"HTTPS /feishu/event"| B["🔒 cloudflared 隧道"]
+    B -->|":8899"| C["⚙️ Flask + Gunicorn<br/>app.py"]
     
-    C --> D["🧠 bot.py<br/>消息解析 · 模块识别<br/>状态管理 · 邮件编译"]
-    C --> E["📧 emailer.py<br/>SMTP 邮件发送"]
-    C --> F["🔄 飞书 OpenAPI<br/>发送消息 · 下载文件"]
+    C --> D["🧠 bot.py · 消息引擎"]
+    C --> E["📧 emailer.py · 邮件"]
+    C --> F["🔄 飞书 OpenAPI"]
     
-    D --> G[("💾 data/{chat_id}.json<br/>模块 MR/Build<br/>附件 Base64")]
-    E --> H[("📨 SMTP<br/>腾讯企业邮箱 :587")]
+    D --> G[("💾 data/{chat_id}.json")]
+    E --> H[("📨 SMTP 腾讯企业邮箱")]
     
     style A fill:#e3f2fd,stroke:#1a73e8,color:#1a1a2e
     style B fill:#fff3e0,stroke:#e65100,color:#1a1a2e
@@ -69,132 +145,91 @@ graph TB
     style H fill:#fce4ec,stroke:#c62828,color:#1a1a2e
 ```
 
-### 核心组件
+### 技术栈
+
+| 层 | 技术 |
+|----|------|
+| Web 框架 | Flask + Gunicorn (Python) |
+| HTTPS 隧道 | cloudflared (免费) |
+| 消息平台 | 飞书开放平台 (tenant_access_token) |
+| 邮件 | SMTP STARTTLS (腾讯企业邮箱) |
+| 存储 | JSON 文件 (按 chat_id 隔离) |
+
+### 核心文件
 
 | 文件 | 职责 |
 |------|------|
-| `app.py` | Flask 服务入口，事件路由 (POST /feishu/event)，@提及检测，多模块拆分 |
-| `bot.py` | 核心逻辑：消息解析、两阶段模块识别、状态读写、命令处理 |
-| `emailer.py` | SMTP 邮件发送，支持多收件人 + 附件打包 |
-| `start.sh` | 部署启动脚本，设置环境变量，gunicorn 后台运行 |
+| `app.py` | Flask 入口，事件路由，@提及检测，多模块拆分 |
+| `bot.py` | 消息解析、两阶段模块识别、状态管理、命令处理 |
+| `emailer.py` | SMTP 邮件发送，多收件人 + 附件打包 |
+| `start.sh` | 部署启动脚本，gunicorn 后台运行 |
 
-### 模块识别 (两阶段检测)
+---
 
-```
-1. Phase 1 — 去 URL 看「人写的文字」前缀 (高优先级)
-   健康检测 > SDK > APK
-
-2. Phase 2 — 全文回退兜底 (低优先级)
-   避免 URL 中 Domain 等关键词误触
-```
-
-## 交互流程
+## 🔄 完整交互时序
 
 ```mermaid
 sequenceDiagram
-    actor 群成员A as 👤 群成员 A
-    actor 群成员B as 👤 群成员 B
-    participant 飞书 as 飞书开放平台
+    actor 成员A as 👤 SDK 负责人
+    actor 成员B as 👤 APK 负责人
+    actor 发起人 as 👤 发起人
+    participant 飞书 as 飞书平台
     participant Bot as 🤖 E0V Bot
-    participant 存储 as 💾 JSON
     
-    Note over 群成员A,存储: Phase 1 — 收集链接
-    群成员A->>飞书: @机器人 SDK MR: https://... Build: https://...
-    飞书->>Bot: POST /feishu/event
-    Bot->>Bot: _detect_module() → 'sdk'
-    Bot->>Bot: _extract_links() → MR ×1, Build ×1
-    Bot->>存储: save → modules.sdk = {mr:[...], build:[...]}
-    Bot->>飞书: 回复: ✅ 已记录 SDK | 📋 进度
+    Note over 成员A,Bot: 📥 收集阶段 — 多人并行提交
     
-    群成员B->>飞书: @机器人 APK MR: https://...
-    飞书->>Bot: POST /feishu/event
-    Bot->>存储: save → modules.apk
-    Bot->>飞书: 回复: ✅ 已记录 APK | 📋 进度
+    成员A->>飞书: @机器人 SDK MR: ... Build: ...
+    飞书->>Bot: 事件推送
+    Bot->>Bot: 识别模块 → 'sdk'
+    Bot->>Bot: 提取 MR/Build 链接
+    Bot->>飞书: ✅ 已记录 SDK | 📋 进度
     
-    Note over 群成员A,存储: Phase 2 — 上传文件
-    群成员A->>飞书: @机器人 [上传] ReleaseNote.pdf
-    飞书->>Bot: file_key
-    Bot->>飞书: download_file(API)
-    飞书-->>Bot: 文件内容 (bytes)
-    Bot->>存储: save → release_note (base64)
-    Bot->>飞书: 回复: ✅ 已接收 | 📋 进度
+    成员B->>飞书: @机器人 APK MR: ...
+    飞书->>Bot: 事件推送
+    Bot->>飞书: ✅ 已记录 APK | 📋 进度
     
-    Note over 群成员A,存储: Phase 3 — 预览确认
-    群成员A->>飞书: @机器人 发版
+    发起人->>飞书: @机器人 [上传] ReleaseNote.pdf
+    飞书->>Bot: 文件事件
+    Bot->>飞书: 下载文件 (API)
+    Bot->>飞书: ✅ 已接收 Release Note | 📋 进度
+    
+    Note over 成员A,Bot: 📧 发版阶段 — 发起人确认
+    
+    发起人->>飞书: @机器人 发版
     飞书->>Bot: 文本消息
-    Bot->>存储: 读取全部 state
-    Bot->>Bot: _build_preview()
-    Bot->>飞书: 回复: 📧 邮件预览 + 收件人 + 操作提示
+    Bot->>Bot: 读取状态 → 组装预览
+    Bot->>飞书: 📧 邮件预览 + 操作提示
     
-    Note over 群成员A,存储: Phase 4 — 发送
-    群成员A->>飞书: 发送
+    发起人->>飞书: 发送
     飞书->>Bot: 确认发送
-    Bot->>Bot: do_send() → 组装邮件模板
-    Bot->>Bot: Emailer.send(SMTP)
-    Bot->>存储: reset() → 清空状态
-    Bot->>飞书: 回复: 📧 邮件已发送！
+    Bot->>Bot: 组装邮件 → SMTP 发出
+    Bot->>Bot: 清空状态
+    Bot->>飞书: 📧 邮件已发送！
 ```
 
-## 命令一览
+---
 
-| 命令 | 作用 |
-|------|------|
-| `@机器人 <链接>` | 提交 MR/Build 链接，自动识别模块 |
-| `@机器人 [上传文件]` | 上传 Release Note 或测试报告 |
-| `@机器人 发版` | 预览版本释放邮件 |
-| `发送` | 确认发送邮件 |
-| `预览` | 查看完整邮件内容 |
-| `进度` / `状态` | 查看当前收集进度 |
-| `加收件人 xxx@email` | 添加收件人 |
-| `删收件人 xxx@email` | 删除收件人 |
-| `收件人` | 查看收件人列表 |
-| `重置` / `清空` | 清空重新开始 |
-| `帮助` | 显示使用说明 |
-
-## 邮件模板
-
-```
-To: sunaoyu@senseauto.com, ...
-Subject: E0V 版本释放通知
-
-1. 版本释放链接
-   【SDK】MR: xxx  Build: xxx
-   【APK】MR: xxx  Build: xxx
-   【健康检测】MR: xxx  Build: xxx
-
-2. Release Note
-   附件: ReleaseNote.pdf
-
-3. 测试报告
-   附件: 测试报告.pdf
-
-此邮件由 E0V 版本释放机器人自动生成
-```
-
-## 部署
+## 🚢 部署
 
 ```bash
 # 服务器: 43.159.43.36
 # 路径: /root/e0v-release-bot/
 
-# 启动
 cd /root/e0v-release-bot && bash start.sh
 
-# HTTPS 隧道 (飞书事件订阅需要)
+# HTTPS 隧道（飞书事件订阅强制 HTTPS）
 cloudflared tunnel --url http://localhost:8899
 # → 更新飞书后台「事件订阅」→「请求网址」
 ```
 
-## 环境变量
-
-| 变量 | 说明 |
-|------|------|
-| `FEISHU_APP_SECRET` | 飞书应用 Secret (`start.sh`) |
-| `SMTP_HOST` | SMTP 服务器 (默认 `smtp.exmail.qq.com`) |
-| `SMTP_PORT` | SMTP 端口 (默认 `587`) |
-| `SMTP_USER` | 发件邮箱地址 |
+| 环境变量 | 说明 |
+|----------|------|
+| `FEISHU_APP_SECRET` | 飞书应用 Secret |
+| `SMTP_HOST` | SMTP 服务器 (默认 smtp.exmail.qq.com) |
+| `SMTP_PORT` | SMTP 端口 (默认 587) |
+| `SMTP_USER` | 发件邮箱 |
 | `SMTP_PASS` | 发件邮箱密码 |
 
-## License
+---
 
-MIT
+MIT · [macjacobs96/e0v-release-bot](https://github.com/macjacobs96/e0v-release-bot)
