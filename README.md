@@ -1,5 +1,7 @@
 # E0V 版本释放机器人
 
+> 🎨 **产品介绍页**: [macjacobs96.github.io/e0v-release-bot/product-page.html](https://macjacobs96.github.io/e0v-release-bot/product-page.html) — 给领导看的
+
 飞书群聊协作模式，自动化 E0V 版本释放流程：收集 SDK / APK / 健康检测的 MR 和 Build 链接，上传 Release Note 和测试报告，一键编译发送版本释放邮件。
 
 ## 一句话说清楚
