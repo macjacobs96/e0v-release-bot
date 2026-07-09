@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E0V 版本释放机器人 - 汇报</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #0f0f0f;
+    display: flex; justify-content: center; align-items: center;
+    min-height: 100vh; flex-direction: column; gap: 40px; padding: 40px;
+  }
+  .slide {
+    width: 960px; height: 540px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 25px 80px rgba(0,0,0,0.5);
+    overflow: hidden; position: relative;
+    flex-shrink: 0;
+  }
+  .slide-label {
+    color: #888; font-size: 13px; margin-bottom: 8px;
+    text-transform: uppercase; letter-spacing: 2px;
+  }
+
+  /* ===== SLIDE 1: ARCHITECTURE ===== */
+  .arch-header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    color: #fff; padding: 32px 48px 24px;
+  }
+  .arch-header h2 { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+  .arch-header .sub { font-size: 14px; color: #8892b0; }
+  .arch-body { padding: 24px 48px; display: flex; gap: 24px; height: 370px; }
+
+  /* Layer stack */
+  .layers { flex: 1; display: flex; flex-direction: column; gap: 8px; justify-content: center; }
+  .layer {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 18px; border-radius: 10px;
+    font-size: 14px; font-weight: 600;
+    transition: transform 0.2s;
+  }
+  .layer:hover { transform: translateX(4px); }
+  .layer .icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+  .layer .info { flex: 1; }
+  .layer .info .title { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+  .layer .info .desc { font-size: 11px; color: #666; font-weight: 400; }
+
+  .l-feishu { background: #e8f4fd; border: 1.5px solid #b8d8f0; }
+  .l-feishu .icon { background: #d4e9f7; color: #1a73e8; }
+  .l-tunnel { background: #fff3e0; border: 1.5px solid #f5d5a0; }
+  .l-tunnel .icon { background: #fde8c8; color: #e65100; }
+  .l-server { background: #e8f5e9; border: 1.5px solid #a5d6a7; }
+  .l-server .icon { background: #c8e6c9; color: #2e7d32; }
+  .l-data { background: #f3e5f5; border: 1.5px solid #ce93d8; }
+  .l-data .icon { background: #e1bee7; color: #7b1fa2; }
+  .l-smtp { background: #fce4ec; border: 1.5px solid #f48fb1; }
+  .l-smtp .icon { background: #f8bbd0; color: #c62828; }
+
+  .arrow-down { text-align: center; font-size: 12px; color: #aaa; margin: -4px 0; }
+
+  /* Right panel */
+  .arch-right {
+    flex: 1.3; display: flex; flex-direction: column; gap: 12px;
+  }
+  .arch-card {
+    background: #f8f9fa; border-radius: 12px; padding: 16px 20px;
+    border: 1px solid #e8eaed;
+  }
+  .arch-card h4 { font-size: 13px; color: #333; margin-bottom: 8px; }
+  .arch-card .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag {
+    font-size: 11px; padding: 4px 10px; border-radius: 6px; font-weight: 500;
+    background: #e8f0fe; color: #1a73e8;
+  }
+  .tag.green { background: #e6f4ea; color: #137333; }
+  .tag.purple { background: #f3e8fd; color: #7627bb; }
+
+  /* ===== SLIDE 2: FLOW ===== */
+  .flow-header {
+    background: linear-gradient(135deg, #2d1b69 0%, #4527a0 50%, #7c4dff 100%);
+    color: #fff; padding: 32px 48px 24px;
+  }
+  .flow-header h2 { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+  .flow-header .sub { font-size: 14px; color: #b39ddb; }
+  .flow-body { padding: 28px 48px; display: flex; gap: 0; align-items: center; height: 370px; justify-content: center; }
+
+  .step {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    width: 170px; text-align: center;
+  }
+  .step-num {
+    width: 52px; height: 52px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 800; color: #fff;
+  }
+  .step-title { font-size: 15px; font-weight: 700; color: #1a1a2e; margin-top: 4px; }
+  .step-desc { font-size: 11px; color: #666; line-height: 1.5; }
+  .step-items { font-size: 10px; color: #999; margin-top: 2px; }
+
+  .s1 .step-num { background: #1a73e8; }
+  .s2 .step-num { background: #e65100; }
+  .s3 .step-num { background: #7b1fa2; }
+  .s4 .step-num { background: #c62828; }
+
+  .arrow { font-size: 28px; color: #ccc; margin: 0 12px; margin-bottom: 40px; }
+
+  /* ===== SLIDE 3: FEATURES ===== */
+  .feat-header {
+    background: linear-gradient(135deg, #004d40 0%, #00695c 50%, #00897b 100%);
+    color: #fff; padding: 32px 48px 24px;
+  }
+  .feat-header h2 { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+  .feat-header .sub { font-size: 14px; color: #80cbc4; }
+  .feat-body { padding: 24px 48px; display: flex; gap: 20px; height: 370px; }
+
+  .feat-card {
+    flex: 1; background: #f8f9fa; border-radius: 14px; padding: 24px;
+    border: 1px solid #e8eaed; display: flex; flex-direction: column;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .feat-card:hover { transform: translateY(-4px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+  .feat-card .feat-icon {
+    width: 48px; height: 48px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; margin-bottom: 14px;
+  }
+  .feat-card h3 { font-size: 17px; font-weight: 700; color: #1a1a2e; margin-bottom: 10px; }
+  .feat-card ul { list-style: none; font-size: 12px; color: #555; line-height: 1.8; }
+  .feat-card ul li::before { content: "· "; color: #999; }
+
+  .fi-blue .feat-icon { background: #e3f2fd; }
+  .fi-orange .feat-icon { background: #fff3e0; }
+  .fi-purple .feat-icon { background: #f3e5f5; }
+
+  /* Footer */
+  .slide-footer {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 3px; background: linear-gradient(90deg, #1a73e8, #e65100, #7b1fa2, #c62828);
+  }
+</style>
+</head>
+<body>
+
+<div class="slide-label">SLIDE 1 — 系统架构</div>
+<div class="slide">
+  <div class="arch-header">
+    <h2>🏗️ E0V 版本释放机器人 · 系统架构</h2>
+    <div class="sub">飞书群聊协作 → Flask 服务 → SMTP 邮件发送 | 服务器 43.159.43.36</div>
+  </div>
+  <div class="arch-body">
+    <div class="layers">
+      <div class="layer l-feishu">
+        <div class="icon">💬</div>
+        <div class="info">
+          <div class="title">飞书群聊 + 开放平台</div>
+          <div class="desc">@机器人 触发 · 事件订阅 HTTPS POST · 文件上传</div>
+        </div>
+      </div>
+      <div class="arrow-down">▼</div>
+      <div class="layer l-tunnel">
+        <div class="icon">🔒</div>
+        <div class="info">
+          <div class="title">cloudflared HTTPS 隧道</div>
+          <div class="desc">免费 HTTPS 终止 · trycloudflare.com → localhost:8899</div>
+        </div>
+      </div>
+      <div class="arrow-down">▼</div>
+      <div class="layer l-server">
+        <div class="icon">⚙️</div>
+        <div class="info">
+          <div class="title">Gunicorn + Flask (Python)</div>
+          <div class="desc">app.py 事件路由 · bot.py 核心逻辑 · emailer.py 邮件</div>
+        </div>
+      </div>
+      <div class="arrow-down">▼</div>
+      <div class="layer l-data">
+        <div class="icon">💾</div>
+        <div class="info">
+          <div class="title">JSON 状态存储</div>
+          <div class="desc">按 chat_id 隔离 · 模块链接 & Base64 附件</div>
+        </div>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <div class="layer l-smtp" style="flex:1;">
+          <div class="icon">📧</div>
+          <div class="info">
+            <div class="title">SMTP 发送</div>
+            <div class="desc">腾讯企业邮箱 :587</div>
+          </div>
+        </div>
+        <div class="layer l-feishu" style="flex:1;">
+          <div class="icon">🔄</div>
+          <div class="info">
+            <div class="title">飞书 API 回复</div>
+            <div class="desc">消息发送 · 进度反馈</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="arch-right">
+      <div class="arch-card">
+        <h4>🧩 核心模块</h4>
+        <div class="tags">
+          <span class="tag">app.py · Flask 服务</span>
+          <span class="tag green">bot.py · 消息引擎</span>
+          <span class="tag purple">emailer.py · 邮件发送</span>
+          <span class="tag">start.sh · 部署启动</span>
+        </div>
+      </div>
+      <div class="arch-card">
+        <h4>🔑 环境变量</h4>
+        <div class="tags">
+          <span class="tag">FEISHU_APP_SECRET</span>
+          <span class="tag green">SMTP_USER / SMTP_PASS</span>
+          <span class="tag purple">SMTP_HOST / SMTP_PORT</span>
+        </div>
+      </div>
+      <div class="arch-card">
+        <h4>📋 模块识别 (两阶段)</h4>
+        <div style="font-size:12px;color:#555;margin-top:4px;line-height:1.8">
+          <strong>Phase 1</strong> — 去 URL 看「人写的文字」前缀<br>
+          <strong>Phase 2</strong> — 全文回退兜底<br>
+          <span style="color:#e65100">健康检测</span> > <span style="color:#1a73e8">SDK</span> > <span style="color:#7b1fa2">APK</span>
+        </div>
+      </div>
+      <div class="arch-card">
+        <h4>📊 数据存储</h4>
+        <div style="font-size:12px;color:#555;margin-top:4px;font-family:monospace;">
+          data/{chat_id}.json<br>
+          → modules: {sdk, apk, health}<br>
+          → release_note / test_report (base64)
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"></div>
+</div>
+
+<div class="slide-label">SLIDE 2 — 交互流程</div>
+<div class="slide">
+  <div class="flow-header">
+    <h2>🔄 E0V 版本释放机器人 · 交互流程</h2>
+    <div class="sub">群聊 @机器人 → 链接收集 → 文件上传 → 预览 → 确认发送</div>
+  </div>
+  <div class="flow-body">
+    <div class="step s1">
+      <div class="step-num">1</div>
+      <div class="step-title">提交链接</div>
+      <div class="step-desc">群成员 @机器人</div>
+      <div class="step-items">SDK MR: https://...<br>Build: https://...</div>
+      <div style="font-size:10px;color:#1a73e8;margin-top:4px;">→ 自动识别模块</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="step s2">
+      <div class="step-num">2</div>
+      <div class="step-title">上传文件</div>
+      <div class="step-desc">发送文件到群聊</div>
+      <div class="step-items">Release Note<br>测试报告</div>
+      <div style="font-size:10px;color:#e65100;margin-top:4px;">→ 自动分类存储</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="step s3">
+      <div class="step-num">3</div>
+      <div class="step-title">发版预览</div>
+      <div class="step-desc">@机器人 发版</div>
+      <div class="step-items">SDK ✅ APK ⬜<br>健康检测 ✅ ...</div>
+      <div style="font-size:10px;color:#7b1fa2;margin-top:4px;">→ 邮件内容预览</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="step s4">
+      <div class="step-num">4</div>
+      <div class="step-title">确认发送</div>
+      <div class="step-desc">回复「发送」</div>
+      <div class="step-items">组装邮件模板<br>附件打包</div>
+      <div style="font-size:10px;color:#c62828;margin-top:4px;">→ SMTP 发出</div>
+    </div>
+  </div>
+  <div style="padding:0 48px 20px;text-align:center;">
+    <div style="display:inline-flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+      <span style="background:#e8f0fe;color:#1a73e8;padding:4px 12px;border-radius:6px;font-size:11px;">进度/状态</span>
+      <span style="background:#fce4ec;color:#c62828;padding:4px 12px;border-radius:6px;font-size:11px;">加收件人 xxx@email</span>
+      <span style="background:#f3e5f5;color:#7b1fa2;padding:4px 12px;border-radius:6px;font-size:11px;">预览完整邮件</span>
+      <span style="background:#e8f5e9;color:#2e7d32;padding:4px 12px;border-radius:6px;font-size:11px;">重置/清空</span>
+      <span style="background:#fff3e0;color:#e65100;padding:4px 12px;border-radius:6px;font-size:11px;">帮助</span>
+      <span style="background:#eee;color:#666;padding:4px 12px;border-radius:6px;font-size:11px;">收件人列表</span>
+    </div>
+    <div style="font-size:10px;color:#999;margin-top:8px;">任意阶段可用命令</div>
+  </div>
+  <div class="slide-footer"></div>
+</div>
+
+<div class="slide-label">SLIDE 3 — 功能亮点 & 邮件模板</div>
+<div class="slide">
+  <div class="feat-header">
+    <h2>✨ E0V 版本释放机器人 · 功能亮点</h2>
+    <div class="sub">群聊协作 · 智能识别 · 一键发版 · 可追溯</div>
+  </div>
+  <div class="feat-body">
+    <div class="feat-card fi-blue">
+      <div class="feat-icon">🧠</div>
+      <h3>智能模块识别</h3>
+      <ul>
+        <li>两阶段检测: 先看人写的前缀 (去 URL)，再全文回退</li>
+        <li>健康检测 > SDK > APK 优先级</li>
+        <li>MR vs Build 自动分类</li>
+        <li>多模块合并提交自动拆分</li>
+        <li>避免 URL 中 Domain 等关键词误匹配</li>
+      </ul>
+    </div>
+    <div class="feat-card fi-orange">
+      <div class="feat-icon">🤝</div>
+      <h3>群聊协作模式</h3>
+      <ul>
+        <li>多人并行提交各模块链接</li>
+        <li>文件拖拽上传自动分类</li>
+        <li>进度实时可见 (✅/⬜ 状态)</li>
+        <li>收件人动态增删管理</li>
+        <li>重置后立即开始下一轮</li>
+      </ul>
+    </div>
+    <div class="feat-card fi-purple">
+      <div class="feat-icon">📧</div>
+      <h3>标准化邮件模板</h3>
+      <ul>
+        <li>三段式结构: 版本链接 / RN / 测试报告</li>
+        <li>模块自动汇总 (不发则标注)</li>
+        <li>附件自动打包 (Base64 解码)</li>
+        <li>SMTP STARTTLS 安全发送</li>
+        <li>发送后自动清空状态</li>
+      </ul>
+    </div>
+  </div>
+  <div style="padding:0 48px 12px;text-align:center;">
+    <div style="background:#f8f9fa;border:1px solid #e8eaed;border-radius:12px;padding:16px 24px;text-align:left;display:inline-block;font-family:monospace;font-size:12px;color:#555;line-height:1.8;">
+      <strong style="color:#1a1a2e;">📧 邮件结构</strong><br>
+      To: sunaoyu@senseauto.com, ...<br>
+      Subject: E0V 版本释放通知<br><br>
+      1. 版本释放链接<br>
+      &nbsp;&nbsp;&nbsp;【SDK】MR: xxx &nbsp; Build: xxx<br>
+      &nbsp;&nbsp;&nbsp;【APK】本次不发<br>
+      &nbsp;&nbsp;&nbsp;【健康检测】MR: xxx<br><br>
+      2. Release Note — 附件: RN.pdf<br>
+      3. 测试报告 — 附件: 测试报告.pdf<br><br>
+      此邮件由 E0V 版本释放机器人自动生成
+    </div>
+  </div>
+  <div class="slide-footer"></div>
+</div>
+
+</body>
+</html>
