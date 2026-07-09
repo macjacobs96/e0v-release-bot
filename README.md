@@ -1,7 +1,7 @@
 # 🚀 E0V 版本释放机器人
 
 <p align="center">
-  <img src="docs/product-hero.svg" alt="E0V 发版机器人" width="800">
+  <img src="docs/product-hero.png" alt="E0V 发版机器人" width="900">
 </p>
 
 > **发版，一句话的事。**  
