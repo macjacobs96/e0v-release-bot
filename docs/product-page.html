@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E0V 发版机器人</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Inter', 'Noto Sans SC', -apple-system, sans-serif;
+  background: #fafafa; color: #1a1a2e;
+  line-height: 1.6;
+}
+
+/* ── HERO ── */
+.hero {
+  background: linear-gradient(135deg, #0f0c29 0%, #1a1a3e 30%, #24243e 60%, #0f3460 100%);
+  color: #fff; padding: 100px 40px 80px;
+  text-align: center; position: relative; overflow: hidden;
+}
+.hero::before {
+  content: ''; position: absolute;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(99,102,241,0.3) 0%, transparent 70%);
+  top: -200px; right: -100px; border-radius: 50%;
+}
+.hero::after {
+  content: ''; position: absolute;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(236,72,153,0.2) 0%, transparent 70%);
+  bottom: -150px; left: -50px; border-radius: 50%;
+}
+.hero-content { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; }
+.hero .badge {
+  display: inline-block; background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 6px 18px; border-radius: 50px;
+  font-size: 13px; letter-spacing: 1px; margin-bottom: 28px;
+  backdrop-filter: blur(10px);
+}
+.hero h1 {
+  font-size: 56px; font-weight: 900; letter-spacing: -2px;
+  margin-bottom: 16px; line-height: 1.15;
+}
+.hero h1 span { 
+  background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero p {
+  font-size: 20px; color: #a5b4fc; max-width: 600px; margin: 0 auto 36px;
+}
+.hero .stats {
+  display: flex; gap: 40px; justify-content: center; margin-top: 20px;
+}
+.hero .stat { text-align: center; }
+.hero .stat .num {
+  font-size: 36px; font-weight: 900;
+  background: linear-gradient(135deg, #818cf8, #e879f9);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero .stat .label { font-size: 13px; color: #94a3b8; margin-top: 4px; }
+
+/* ── SECTION ── */
+.section {
+  max-width: 1000px; margin: 0 auto; padding: 80px 40px;
+}
+.section-label {
+  text-transform: uppercase; font-size: 12px; font-weight: 700;
+  letter-spacing: 3px; color: #6366f1; margin-bottom: 12px;
+}
+.section h2 { font-size: 36px; font-weight: 800; letter-spacing: -1px; margin-bottom: 12px; }
+.section .subtitle { font-size: 17px; color: #64748b; margin-bottom: 48px; max-width: 600px; }
+
+/* ── BEFORE/AFTER ── */
+.comp {
+  display: grid; grid-template-columns: 1fr 60px 1fr; gap: 20px; align-items: start;
+  background: #fff; border-radius: 24px; padding: 40px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 20px 60px rgba(0,0,0,0.06);
+}
+.comp-col { padding: 24px; border-radius: 16px; }
+.comp-col.bad { background: #fef2f2; border: 1px solid #fecaca; }
+.comp-col.good { background: #f0fdf4; border: 1px solid #bbf7d0; }
+.comp-col h4 { font-size: 16px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.comp-col ul { list-style: none; font-size: 14px; color: #475569; }
+.comp-col ul li { padding: 6px 0; }
+.comp-col ul li::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 8px; }
+.comp-col.bad ul li::before { background: #ef4444; }
+.comp-col.good ul li::before { background: #22c55e; }
+.comp-vs {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.comp-vs .vs {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #ec4899);
+  color: #fff; font-weight: 900; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ── 3 STEPS ── */
+.steps {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; position: relative;
+}
+.steps::before {
+  content: ''; position: absolute;
+  top: 60px; left: 25%; right: 25%; height: 2px;
+  background: linear-gradient(90deg, #6366f1, #a855f7, #ec4899);
+  z-index: 0;
+}
+.step-card {
+  background: #fff; border-radius: 20px; padding: 36px 28px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 12px 40px rgba(0,0,0,0.05);
+  position: relative; z-index: 1; text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.step-card:hover { transform: translateY(-6px); box-shadow: 0 8px 40px rgba(99,102,241,0.15); }
+.step-num {
+  width: 56px; height: 56px; border-radius: 16px; margin: 0 auto 20px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; font-weight: 900; color: #fff;
+}
+.step-card:nth-child(1) .step-num { background: linear-gradient(135deg, #6366f1, #818cf8); }
+.step-card:nth-child(2) .step-num { background: linear-gradient(135deg, #a855f7, #c084fc); }
+.step-card:nth-child(3) .step-num { background: linear-gradient(135deg, #ec4899, #f472b6); }
+.step-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 12px; }
+.step-card p { font-size: 13px; color: #64748b; line-height: 1.7; }
+.step-card .tag-list {
+  display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 14px;
+}
+.step-card .tag {
+  font-size: 11px; padding: 3px 10px; border-radius: 6px; font-weight: 600;
+  background: #f1f5f9; color: #475569;
+}
+
+/* ── FEATURES ── */
+.features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.feat-card {
+  background: #fff; border-radius: 16px; padding: 28px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 8px 30px rgba(0,0,0,0.04);
+  transition: transform 0.2s;
+}
+.feat-card:hover { transform: translateY(-4px); }
+.feat-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; margin-bottom: 16px;
+}
+.feat-card h4 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+.feat-card p { font-size: 13px; color: #64748b; line-height: 1.7; }
+
+/* ── COMMANDS ── */
+.cmd-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.cmd-item {
+  background: #fff; border-radius: 12px; padding: 16px 20px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  display: flex; align-items: center; gap: 14px;
+}
+.cmd-item .cmd-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+  background: #f1f5f9;
+}
+.cmd-item .cmd-text { font-size: 14px; font-weight: 600; color: #1e293b; }
+.cmd-item .cmd-desc { font-size: 12px; color: #94a3b8; }
+
+/* ── FOOTER ── */
+.footer {
+  text-align: center; padding: 60px 40px;
+  background: #0f172a; color: #64748b; font-size: 13px;
+}
+.footer a { color: #818cf8; text-decoration: none; }
+
+@media (max-width: 768px) {
+  .comp { grid-template-columns: 1fr; }
+  .comp-vs { flex-direction: row; }
+  .steps, .features { grid-template-columns: 1fr; }
+  .steps::before { display: none; }
+  .cmd-grid { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 36px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════ HERO ════════════ -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="badge">🚀 E0V · 版本释放自动化</div>
+    <h1>发版，<span>一句话的事</span></h1>
+    <p>飞书群聊协作，自动收集 SDK / APK / 健康检测的版本链接和文件，一键生成并发送版本释放邮件。</p>
+    <div class="stats">
+      <div class="stat"><div class="num">3</div><div class="label">步完成</div></div>
+      <div class="stat"><div class="num">0</div><div class="label">手动整理</div></div>
+      <div class="stat"><div class="num">1</div><div class="label">键发送</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ 对比 ════════════ -->
+<section class="section">
+  <div class="section-label">痛点与方案</div>
+  <h2>以前 vs 现在</h2>
+  <p class="subtitle">一个版本释放涉及 SDK、APK、健康检测三个模块，每个模块有 MR 链接和 Build 链接，还有 Release Note 和测试报告。以前靠人工催、手动整理，现在全自动。</p>
+
+  <div class="comp">
+    <div class="comp-col bad">
+      <h4>😫 以前</h4>
+      <ul>
+        <li>群聊里来回 @人催链接</li>
+        <li>手动复制粘贴整理邮件</li>
+        <li>容易漏模块、漏链接</li>
+        <li>文件传来传去版本混乱</li>
+        <li>发完还得手动归档</li>
+      </ul>
+    </div>
+    <div class="comp-vs"><div class="vs">VS</div></div>
+    <div class="comp-col good">
+      <h4>😎 现在</h4>
+      <ul>
+        <li>各负责人群里丢链接即可</li>
+        <li>机器人自动收集、汇总</li>
+        <li>进度一目了然，缺啥看得到</li>
+        <li>文件拖进群自动识别分类</li>
+        <li>说「发版」→「发送」，完事</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ 3 步流程 ════════════ -->
+<section class="section" style="background:#fff; max-width:100%; padding:80px 40px;">
+  <div style="max-width:1000px; margin:0 auto;">
+    <div class="section-label">使用流程</div>
+    <h2>就 3 步</h2>
+    <p class="subtitle">多人并行提交，发起人最后确认发送，跟群接龙一样简单。</p>
+
+    <div class="steps">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <h3>群里丢链接</h3>
+        <p>各模块负责人 @机器人，把 MR 和 Build 链接发到群里。支持文件拖拽上传 Release Note 和测试报告。</p>
+        <div class="tag-list">
+          <span class="tag">@机器人 SDK MR: ...</span>
+          <span class="tag">@机器人 APK Build: ...</span>
+          <span class="tag">@机器人 [上传文件]</span>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <h3>预览确认</h3>
+        <p>发起人 @机器人「发版」，机器人展示邮件内容预览。收件人可随时增删，不放心发「预览」看详情。</p>
+        <div class="tag-list">
+          <span class="tag">@机器人 发版</span>
+          <span class="tag">@机器人 预览</span>
+          <span class="tag">+收件人 xxx@email</span>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <h3>发送</h3>
+        <p>确认无误后回复「发送」，邮件即刻发出。状态自动清空，随时可以开始下一轮版本释放。</p>
+        <div class="tag-list">
+          <span class="tag">发送</span>
+          <span class="tag">📧 邮件已发送！</span>
+          <span class="tag">自动清空状态</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ 功能亮点 ════════════ -->
+<section class="section">
+  <div class="section-label">功能亮点</div>
+  <h2>为什么好用</h2>
+  <p class="subtitle">不是简单的「收到链接→发邮件」，背后有一整套智能处理逻辑。</p>
+
+  <div class="features">
+    <div class="feat-card">
+      <div class="feat-icon" style="background:#eef2ff;">🧠</div>
+      <h4>智能模块识别</h4>
+      <p>发「健康检测：」自动归到健康检测模块，不会被 URL 里的 Domain 干扰。SDK / APK 也同样自动识别。</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon" style="background:#fef3c7;">👥</div>
+      <h4>多人并行协作</h4>
+      <p>SDK 负责人、APK 负责人、测试负责人各发各的，互不干扰。进度实时可见，谁没交一眼就知道。</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon" style="background:#fce7f3;">📎</div>
+      <h4>文件自动分类</h4>
+      <p>拖个文件进群，机器人自动判断是 Release Note 还是测试报告，不需要手动标注。</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon" style="background:#e0e7ff;">📋</div>
+      <h4>进度实时可见</h4>
+      <p>随时发「进度」查看收集状态。SDK ✅ / APK ⬜ / 健康检测 ✅ / Release Note ⬜ — 差啥补啥。</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon" style="background:#d1fae5;">📧</div>
+      <h4>标准化邮件模板</h4>
+      <p>三段式结构：版本链接 + Release Note + 测试报告。模块不发则自动标注，附件自动打包。</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon" style="background:#ede9fe;">🔄</div>
+      <h4>即用即走</h4>
+      <p>发送后自动清空状态，下一轮接着用。收件人列表可精细管理，增删随时生效。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ 命令 ════════════ -->
+<section class="section" style="background:#fff; max-width:100%; padding:80px 40px;">
+  <div style="max-width:1000px; margin:0 auto;">
+    <div class="section-label">命令参考</div>
+    <h2>支持的指令</h2>
+    <p class="subtitle">在群里 @机器人 + 以下任意指令即可。</p>
+
+    <div class="cmd-grid">
+      <div class="cmd-item">
+        <div class="cmd-icon">🔗</div>
+        <div><div class="cmd-text">@机器人 &lt;链接&gt;</div><div class="cmd-desc">提交 MR / Build 链接</div></div>
+      </div>
+      <div class="cmd-item">
+        <div class="cmd-icon">📎</div>
+        <div><div class="cmd-text">@机器人 [上传文件]</div><div class="cmd-desc">上传 Release Note 或测试报告</div></div>
+      </div>
+      <div class="cmd-item">
+        <div class="cmd-icon">📧</div>
+        <div><div class="cmd-text">@机器人 发版</div><div class="cmd-desc">预览版本释放邮件</div></div>
+      </div>
+      <div class="cmd-item">
+        <div class="cmd-icon">✅</div>
+        <div><div class="cmd-text">发送</div><div class="cmd-desc">确认发出邮件</div></div>
+      </div>
+      <div class="cmd-item">
+        <div class="cmd-icon">👁️</div>
+        <div><div class="cmd-text">预览</div><div class="cmd-desc">查看完整邮件详情</div></div>
+      </div>
+      <div class="cmd-item">
+        <div class="cmd-icon">📊</div>
+        <div><div class="cmd-text">进度</div><div class="cmd-desc">查看各模块收集状态</div></div>
+      </div>
+      <div class="cmd-item">
+        <div class="cmd-icon">➕</div>
+        <div><div class="cmd-text">加收件人 xxx@email</div><div class="cmd-desc">添加邮件收件人</div></div>
+      </div>
+      <div class="cmd-item">
+        <div class="cmd-icon">🔄</div>
+        <div><div class="cmd-text">重置</div><div class="cmd-desc">清空重新开始</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  E0V 版本释放机器人 · 飞书群聊协作 · 自动化版本释放<br>
+  <a href="https://github.com/macjacobs96/e0v-release-bot">github.com/macjacobs96/e0v-release-bot</a>
+</footer>
+
+</body>
+</html>
