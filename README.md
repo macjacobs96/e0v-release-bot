@@ -2,6 +2,47 @@
 
 飞书群聊协作模式，自动化 E0V 版本释放流程：收集 SDK / APK / 健康检测的 MR 和 Build 链接，上传 Release Note 和测试报告，一键编译发送版本释放邮件。
 
+## 一句话说清楚
+
+> 以前发版要在群里来回 @人收集链接、手动整理邮件；现在大家各自把链接扔群里，机器人自动收集，最后说一声「发版」就完事。
+
+```mermaid
+flowchart LR
+    A["以前 😫<br/>群聊来回催<br/>手动整理邮件<br/>容易漏模块"] -->|"自动化"| B["现在 😎<br/>@机器人丢链接<br/>进度实时可见<br/>一键发版"]
+    
+    style A fill:#fce4ec,stroke:#c62828,color:#1a1a2e
+    style B fill:#e8f5e9,stroke:#2e7d32,color:#1a1a2e
+```
+
+## 怎么用（就 3 步）
+
+```mermaid
+flowchart TD
+    S1["<b>第 1 步：群里丢链接</b><br/>@机器人 SDK MR: https://...<br/>@机器人 APK MR: https://...<br/>@机器人 [上传 Release Note]<br/>@机器人 [上传测试报告]<br/><br/>谁负责哪个模块，谁就发哪个"] -->
+    S2["<b>第 2 步：预览确认</b><br/>@机器人 发版<br/><br/>机器人展示邮件内容<br/>SDK ✅ APK ✅ 健康检测 ✅<br/>收件人：xxx@email<br/><br/>不放心就发「预览」看详情"] -->
+    S3["<b>第 3 步：发送</b><br/>回复「发送」<br/><br/>📧 邮件发出！<br/>自动清空，下一轮接着用"]
+    
+    S1 -.->|"任意时候"| C1["查看进度"]
+    S1 -.->|"任意时候"| C2["加/删收件人"]
+    S2 -.->|"反悔了"| C3["重置重来"]
+    
+    style S1 fill:#e3f2fd,stroke:#1a73e8,color:#1a1a2e
+    style S2 fill:#fff3e0,stroke:#e65100,color:#1a1a2e
+    style S3 fill:#e8f5e9,stroke:#2e7d32,color:#1a1a2e
+    style C1 fill:#f5f5f5,stroke:#999,color:#666
+    style C2 fill:#f5f5f5,stroke:#999,color:#666
+    style C3 fill:#f5f5f5,stroke:#999,color:#666
+```
+
+| 命令 | 作用 |
+|------|------|
+| `@机器人 <链接>` | 提交 MR/Build 链接，自动识别是 SDK/APK/健康检测 |
+| `@机器人 [上传文件]` | 上传 Release Note 或测试报告 |
+| `@机器人 发版` | 预览邮件 |
+| `发送` | 确认发出版本释放邮件 |
+| `进度` | 看看还差哪些没交 |
+| `重置` | 全部清空重新来 |
+
 ## 系统架构
 
 ```mermaid
