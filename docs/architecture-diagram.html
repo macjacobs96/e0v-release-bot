@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E0V Release Bot Architecture</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'JetBrains Mono', monospace;
+      background: #020617;
+      min-height: 100vh;
+      padding: 2rem;
+      color: white;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .header { margin-bottom: 2rem; }
+    .header-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem; }
+    .pulse-dot {
+      width: 12px; height: 12px; background: #22d3ee;
+      border-radius: 50%; animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.025em; }
+    .subtitle { color: #94a3b8; font-size: 0.875rem; margin-left: 1.75rem; }
+    .diagram-container {
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 1rem; border: 1px solid #1e293b;
+      padding: 1.5rem; overflow-x: auto;
+    }
+    svg { width: 100%; min-width: 1000px; display: block; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-top: 2rem; }
+    .card { background: rgba(15, 23, 42, 0.5); border-radius: 0.75rem; border: 1px solid #1e293b; padding: 1.25rem; }
+    .card-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; }
+    .card-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .card-dot.cyan { background: #22d3ee; }
+    .card-dot.emerald { background: #34d399; }
+    .card-dot.violet { background: #a78bfa; }
+    .card-dot.amber { background: #fbbf24; }
+    .card h3 { font-size: 0.875rem; font-weight: 600; }
+    .card ul { list-style: none; color: #94a3b8; font-size: 0.75rem; }
+    .card li { margin-bottom: 0.375rem; }
+    .footer { text-align: center; margin-top: 1.5rem; color: #475569; font-size: 0.75rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="header-row">
+        <div class="pulse-dot"></div>
+        <h1>E0V 版本释放机器人 — 系统架构</h1>
+      </div>
+      <p class="subtitle">飞书群聊协作 → Flask 服务 → SMTP 邮件发送</p>
+    </div>
+
+    <div class="diagram-container">
+      <svg viewBox="0 0 1100 700">
+        <defs>
+          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#64748b" />
+          </marker>
+          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#grid)" />
+
+        <!-- ===== 飞书生态 (External) ===== -->
+        <rect x="20" y="30" width="240" height="170" rx="8" fill="rgba(30, 41, 59, 0.3)" stroke="#64748b" stroke-width="1" stroke-dasharray="4,4"/>
+        <text x="32" y="50" fill="#64748b" font-size="9">飞书生态</text>
+
+        <!-- 飞书群聊 -->
+        <rect x="40" y="60" width="200" height="50" rx="6" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.5"/>
+        <text x="140" y="82" fill="white" font-size="12" font-weight="600" text-anchor="middle">飞书群聊</text>
+        <text x="140" y="98" fill="#94a3b8" font-size="9" text-anchor="middle">E0V 发版群 / @机器人</text>
+
+        <!-- 飞书开放平台 -->
+        <rect x="40" y="130" width="200" height="55" rx="6" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.5"/>
+        <text x="140" y="152" fill="white" font-size="12" font-weight="600" text-anchor="middle">飞书开放平台</text>
+        <text x="140" y="168" fill="#94a3b8" font-size="9" text-anchor="middle">事件订阅 + 权限管理</text>
+
+        <!-- ===== 隧道层 ===== -->
+        <rect x="280" y="30" width="160" height="170" rx="8" fill="rgba(251, 146, 60, 0.08)" stroke="#fb923c" stroke-width="1" stroke-dasharray="6,3"/>
+        <text x="292" y="50" fill="#fb923c" font-size="9">HTTPS 隧道</text>
+
+        <rect x="295" y="80" width="130" height="95" rx="6" fill="rgba(251, 146, 60, 0.2)" stroke="#fb923c" stroke-width="1.5"/>
+        <text x="360" y="105" fill="white" font-size="12" font-weight="600" text-anchor="middle">cloudflared</text>
+        <text x="360" y="122" fill="#94a3b8" font-size="8" text-anchor="middle">trycloudflare.com</text>
+        <text x="360" y="138" fill="#94a3b8" font-size="8" text-anchor="middle">→ localhost:8899</text>
+        <text x="360" y="154" fill="#fb923c" font-size="7" text-anchor="middle">免费 HTTPS 终止</text>
+
+        <!-- ===== 服务器 43.159.43.36 ===== -->
+        <rect x="460" y="24" width="620" height="650" rx="12" fill="rgba(52, 211, 153, 0.04)" stroke="#34d399" stroke-width="1.5" stroke-dasharray="8,4"/>
+        <text x="474" y="45" fill="#34d399" font-size="10" font-weight="600">Server: 43.159.43.36  /root/e0v-release-bot/</text>
+
+        <!-- Gunicorn + Flask -->
+        <rect x="485" y="60" width="220" height="75" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="595" y="82" fill="white" font-size="12" font-weight="600" text-anchor="middle">Gunicorn + Flask</text>
+        <text x="595" y="100" fill="#94a3b8" font-size="9" text-anchor="middle">app.py :8899</text>
+        <text x="595" y="116" fill="#94a3b8" font-size="8" text-anchor="middle">POST /feishu/event</text>
+        <text x="595" y="130" fill="#94a3b8" font-size="8" text-anchor="middle">GET /health</text>
+
+        <!-- Bot 核心逻辑 -->
+        <rect x="485" y="160" width="220" height="95" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="595" y="182" fill="white" font-size="12" font-weight="600" text-anchor="middle">Bot Core (bot.py)</text>
+        <text x="595" y="200" fill="#94a3b8" font-size="8" text-anchor="middle">· 消息解析 (模块识别)</text>
+        <text x="595" y="216" fill="#94a3b8" font-size="8" text-anchor="middle">· 状态管理 (读/写 JSON)</text>
+        <text x="595" y="232" fill="#94a3b8" font-size="8" text-anchor="middle">· 邮件预览 & 编译</text>
+        <text x="595" y="248" fill="#94a3b8" font-size="8" text-anchor="middle">· 文件下载 (飞书 API)</text>
+
+        <!-- Emailer -->
+        <rect x="485" y="280" width="220" height="60" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="595" y="302" fill="white" font-size="12" font-weight="600" text-anchor="middle">Emailer (emailer.py)</text>
+        <text x="595" y="320" fill="#94a3b8" font-size="8" text-anchor="middle">SMTP: smtp.exmail.qq.com:587</text>
+        <text x="595" y="336" fill="#94a3b8" font-size="8" text-anchor="middle">附件 (Release Note / 测试报告)</text>
+
+        <!-- 数据存储 -->
+        <rect x="730" y="60" width="180" height="75" rx="6" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="820" y="82" fill="white" font-size="12" font-weight="600" text-anchor="middle">数据存储</text>
+        <text x="820" y="100" fill="#94a3b8" font-size="9" text-anchor="middle">data/{chat_id}.json</text>
+        <text x="820" y="118" fill="#94a3b8" font-size="8" text-anchor="middle">模块 MR/Build 链接</text>
+        <text x="820" y="132" fill="#94a3b8" font-size="8" text-anchor="middle">Release Note / 测试报告</text>
+
+        <!-- SMTP -->
+        <rect x="930" y="60" width="130" height="55" rx="6" fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5"/>
+        <text x="995" y="82" fill="white" font-size="11" font-weight="600" text-anchor="middle">SMTP 服务</text>
+        <text x="995" y="98" fill="#94a3b8" font-size="8" text-anchor="middle">腾讯企业邮箱</text>
+        <text x="995" y="112" fill="#fbbf24" font-size="7" text-anchor="middle">STARTTLS :587</text>
+
+        <!-- 飞书 API -->
+        <rect x="730" y="160" width="330" height="70" rx="6" fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5"/>
+        <text x="895" y="182" fill="white" font-size="11" font-weight="600" text-anchor="middle">飞书 OpenAPI</text>
+        <text x="895" y="200" fill="#94a3b8" font-size="8" text-anchor="middle">tenant_access_token (缓存 1h)</text>
+        <text x="895" y="216" fill="#94a3b8" font-size="8" text-anchor="middle">发送消息 · 下载文件 · 获取消息内容</text>
+
+        <!-- ===== 环境变量区 ===== -->
+        <rect x="485" y="370" width="575" height="90" rx="8" fill="rgba(136, 19, 55, 0.1)" stroke="#fb7185" stroke-width="1" stroke-dasharray="4,4"/>
+        <text x="497" y="390" fill="#fb7185" font-size="9">环境变量 (start.sh / SMTP)</text>
+
+        <rect x="500" y="400" width="170" height="50" rx="4" fill="rgba(136, 19, 55, 0.2)" stroke="#fb7185" stroke-width="1"/>
+        <text x="585" y="420" fill="#fb7185" font-size="8" text-anchor="middle">FEISHU_APP_SECRET</text>
+        <text x="585" y="438" fill="#94a3b8" font-size="7" text-anchor="middle">飞书应用凭证</text>
+
+        <rect x="690" y="400" width="170" height="50" rx="4" fill="rgba(136, 19, 55, 0.2)" stroke="#fb7185" stroke-width="1"/>
+        <text x="775" y="420" fill="#fb7185" font-size="8" text-anchor="middle">SMTP_USER/PASS</text>
+        <text x="775" y="438" fill="#94a3b8" font-size="7" text-anchor="middle">发件邮箱凭证</text>
+
+        <rect x="880" y="400" width="160" height="50" rx="4" fill="rgba(136, 19, 55, 0.2)" stroke="#fb7185" stroke-width="1"/>
+        <text x="960" y="420" fill="#fb7185" font-size="8" text-anchor="middle">SMTP_HOST/PORT</text>
+        <text x="960" y="438" fill="#94a3b8" font-size="7" text-anchor="middle">exmail.qq.com:587</text>
+
+        <!-- ===== 功能模块卡片 ===== -->
+        <rect x="485" y="490" width="185" height="160" rx="6" fill="rgba(8, 51, 68, 0.3)" stroke="#22d3ee" stroke-width="1"/>
+        <text x="577" y="515" fill="#22d3ee" font-size="10" font-weight="600" text-anchor="middle">消息处理</text>
+        <text x="577" y="535" fill="#94a3b8" font-size="8" text-anchor="middle">· @提及检测</text>
+        <text x="577" y="553" fill="#94a3b8" font-size="8" text-anchor="middle">· 多模块分段解析</text>
+        <text x="577" y="571" fill="#94a3b8" font-size="8" text-anchor="middle">· 文本 + 文件双模式</text>
+        <text x="577" y="589" fill="#94a3b8" font-size="8" text-anchor="middle">· URL 自动分类</text>
+        <text x="577" y="607" fill="#94a3b8" font-size="8" text-anchor="middle">· 命令路由</text>
+        <text x="577" y="625" fill="#94a3b8" font-size="8" text-anchor="middle">· 进度反馈</text>
+
+        <rect x="690" y="490" width="185" height="160" rx="6" fill="rgba(8, 51, 68, 0.3)" stroke="#22d3ee" stroke-width="1"/>
+        <text x="782" y="515" fill="#22d3ee" font-size="10" font-weight="600" text-anchor="middle">模块识别</text>
+        <text x="782" y="535" fill="#94a3b8" font-size="8" text-anchor="middle">· SDK / APK / 健康检测</text>
+        <text x="782" y="553" fill="#94a3b8" font-size="8" text-anchor="middle">· 两阶段检测:</text>
+        <text x="782" y="571" fill="#94a3b8" font-size="7" text-anchor="middle">  ① 去掉 URL 看 prefix</text>
+        <text x="782" y="589" fill="#94a3b8" font-size="7" text-anchor="middle">  ② 全文回退兜底</text>
+        <text x="782" y="607" fill="#94a3b8" font-size="8" text-anchor="middle">· MR vs Build 分类</text>
+        <text x="782" y="625" fill="#94a3b8" font-size="8" text-anchor="middle">· 健康检测优先匹配</text>
+
+        <rect x="895" y="490" width="165" height="160" rx="6" fill="rgba(8, 51, 68, 0.3)" stroke="#22d3ee" stroke-width="1"/>
+        <text x="977" y="515" fill="#22d3ee" font-size="10" font-weight="600" text-anchor="middle">邮件编译</text>
+        <text x="977" y="535" fill="#94a3b8" font-size="8" text-anchor="middle">· 预览模式</text>
+        <text x="977" y="553" fill="#94a3b8" font-size="8" text-anchor="middle">· 完整预览</text>
+        <text x="977" y="571" fill="#94a3b8" font-size="8" text-anchor="middle">· 收件人管理</text>
+        <text x="977" y="589" fill="#94a3b8" font-size="8" text-anchor="middle">· 模块汇总</text>
+        <text x="977" y="607" fill="#94a3b8" font-size="8" text-anchor="middle">· 附件打包</text>
+        <text x="977" y="625" fill="#94a3b8" font-size="8" text-anchor="middle">· 发送确认</text>
+
+        <!-- ===== ARROWS ===== -->
+
+        <!-- User → Feishu Platform -->
+        <line x1="140" y1="110" x2="140" y2="128" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <text x="155" y="123" fill="#94a3b8" font-size="7">@机器人 发消息/文件</text>
+
+        <!-- Feishu → cloudflared -->
+        <line x1="240" y1="145" x2="293" y2="130" stroke="#fb923c" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <text x="258" y="125" fill="#fb923c" font-size="7">HTTPS POST</text>
+        <text x="258" y="138" fill="#fb923c" font-size="7">/feishu/event</text>
+
+        <!-- cloudflared → Gunicorn -->
+        <line x1="425" y1="130" x2="483" y2="105" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <text x="445" y="110" fill="#34d399" font-size="7">→ :8899</text>
+
+        <!-- Gunicorn → Bot -->
+        <line x1="595" y1="135" x2="595" y2="158" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+        <!-- Bot ↔ Data -->
+        <line x1="705" y1="207" x2="728" y2="110" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <text x="740" y="155" fill="#a78bfa" font-size="7">读写状态</text>
+
+        <!-- Bot → Emailer -->
+        <line x1="595" y1="255" x2="595" y2="278" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+        <!-- Emailer → SMTP -->
+        <line x1="705" y1="310" x2="928" y2="95" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <text x="810" y="200" fill="#fbbf24" font-size="7">SMTP STARTTLS</text>
+
+        <!-- Bot → Feishu API (send message) -->
+        <path d="M 595 255 L 595 360 Q 595 365 600 365 L 730 365 L 730 200" fill="none" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <text x="640" y="360" fill="#fbbf24" font-size="7">发送回复消息</text>
+
+        <!-- Bot → Feishu API (download) -->
+        <path d="M 705 230 L 820 230" fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrowhead)"/>
+        <text x="750" y="223" fill="#fbbf24" font-size="7">下载文件</text>
+
+        <!-- SMTP → 收件人 -->
+        <line x1="995" y1="115" x2="995" y2="20" stroke="#fbbf24" stroke-width="1" stroke-dasharray="3,3"/>
+        <text x="1010" y="65" fill="#94a3b8" font-size="7">发送到收件人</text>
+        <text x="1010" y="78" fill="#94a3b8" font-size="7">邮箱</text>
+
+        <!-- ===== LEGEND ===== -->
+        <rect x="485" y="470" width="575" height="15" rx="3" fill="transparent"/>
+        <text x="500" y="485" fill="#64748b" font-size="9">图例:</text>
+        <rect x="540" y="476" width="14" height="9" rx="2" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1"/>
+        <text x="558" y="484" fill="#94a3b8" font-size="7">后端服务</text>
+        <rect x="620" y="476" width="14" height="9" rx="2" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1"/>
+        <text x="638" y="484" fill="#94a3b8" font-size="7">数据存储</text>
+        <rect x="700" y="476" width="14" height="9" rx="2" fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1"/>
+        <text x="718" y="484" fill="#94a3b8" font-size="7">外部 API</text>
+        <rect x="780" y="476" width="14" height="9" rx="2" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1"/>
+        <text x="798" y="484" fill="#94a3b8" font-size="7">用户端</text>
+        <rect x="860" y="476" width="14" height="9" rx="2" fill="rgba(136, 19, 55, 0.3)" stroke="#fb7185" stroke-width="1"/>
+        <text x="878" y="484" fill="#94a3b8" font-size="7">凭证/密钥</text>
+        <rect x="950" y="476" width="14" height="9" rx="2" fill="rgba(251, 146, 60, 0.2)" stroke="#fb923c" stroke-width="1"/>
+        <text x="968" y="484" fill="#94a3b8" font-size="7">隧道</text>
+
+      </svg>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot emerald"></div>
+          <h3>核心技术栈</h3>
+        </div>
+        <ul>
+          <li>· Flask + Gunicorn (Python)</li>
+          <li>· cloudflared HTTPS 隧道</li>
+          <li>· 飞书 OpenAPI (tenant token)</li>
+          <li>· SMTP (腾讯企业邮箱)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot cyan"></div>
+          <h3>部署信息</h3>
+        </div>
+        <ul>
+          <li>· 服务器: 43.159.43.36</li>
+          <li>· 路径: /root/e0v-release-bot/</li>
+          <li>· 端口: gunicorn :8899</li>
+          <li>· App ID: cli_aac52571b2f81cfa</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-dot violet"></div>
+        <h3>状态存储</h3>
+      </div>
+      <ul>
+        <li>· 按 chat_id 隔离</li>
+        <li>· JSON 文件持久化</li>
+        <li>· 模块 MR/Build 链接</li>
+        <li>· 附件 Base64 内嵌</li>
+      </ul>
+    </div>
+
+    <p class="footer">E0V 版本释放机器人 · macjacobs96 · 2026</p>
+  </div>
+</body>
+</html>
